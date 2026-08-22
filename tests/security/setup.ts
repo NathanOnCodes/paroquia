@@ -1,0 +1,11 @@
+process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
+process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = "test-publishable-key";
+process.env.SUPABASE_SERVICE_ROLE_KEY = "test-service-role";
+process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = "pk_test_123";
+process.env.STRIPE_SECRET_KEY = "sk_test_123";
+process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
+process.env.RESEND_API_KEY = "re_test_123";
+process.env.EMAIL_FROM = "test@example.com";
+process.env.NEXT_PUBLIC_SITE_URL = "http://localhost:3000";
+process.env.RECURRING_TOKEN_TTL_HOURS = "24";
+process.env.MAX_FILE_SIZE_MB = "10";
