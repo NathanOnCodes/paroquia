@@ -74,12 +74,14 @@ Este projeto é distribuído sob a **Licença de Caridade para a Igreja**
 - **Proibido**: vender o sistema, cobrar por ele como produto ou serviço,
   ou usá-lo com fins comerciais lucrativos.
 
+> ## *"Cada um contribua segundo propôs no seu coração, não com tristeza ou
+> por necessidade; porque Deus ama ao que dá com alegria."*
+>
+> **2 Coríntios 9, 7**
+
 ## Autor
 
 Desenvolvido com fé por **Nathan**, como obra de caridade a serviço da
 Santa Igreja.
 
 - LinkedIn: [linkedin.com/in/nathanoncodes](https://www.linkedin.com/in/nathanoncodes/)
-
-> "Cada um contribua segundo propôs no seu coração, não com tristeza ou por
-> necessidade; porque Deus ama ao que dá com alegria." (2 Coríntios 9, 7)
