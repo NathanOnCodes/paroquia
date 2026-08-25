@@ -11,8 +11,9 @@ import TableRow from "@mui/material/TableRow";
 import Chip from "@mui/material/Chip";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
-import ServerForm from "@/components/admin/ServerForm";
+import ServerForm from "@/design-system/forms/ServerForm";
 import { listStaffUsers } from "@/features/auth/queries.admin";
+import PageHeader from "@/design-system/layout/PageHeader";
 import { createStaffUserAction, updateStaffUserAction } from "@/features/auth/actions";
 import { requireRole } from "@/lib/auth/authorization";
 import { ROLE_LABELS } from "@/lib/auth/roles";
@@ -28,9 +29,7 @@ export default async function AdminUsersPage() {
 
   return (
     <Box>
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        Usuários administrativos
-      </Typography>
+      <PageHeader title="Usuários administrativos" />
 
       <Paper sx={{ p: 3, mb: 3 }}>
         <Typography variant="h6" sx={{ mb: 2 }}>
