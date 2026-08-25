@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import ContactForm from "@/components/contact/ContactForm";
+import PageHeader from "@/design-system/layout/PageHeader";
+import ContactForm from "@/features/contact/components/ContactForm";
 
 export const metadata = {
   title: "Contato",
@@ -9,12 +9,10 @@ export const metadata = {
 export default function ContatoPage() {
   return (
     <Box sx={{ maxWidth: 640, mx: "auto" }}>
-      <Typography variant="h4" sx={{ mb: 1 }}>
-        Fale conosco
-      </Typography>
-      <Typography color="text.secondary" sx={{ mb: 3 }}>
-        Envie sua mensagem: dúvidas, sugestões ou pedidos de oração.
-      </Typography>
+      <PageHeader
+        title="Fale conosco"
+        description="Envie sua mensagem: dúvidas, sugestões ou pedidos de oração."
+      />
       <ContactForm />
     </Box>
   );
