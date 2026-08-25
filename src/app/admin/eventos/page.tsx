@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -11,6 +10,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Chip from "@mui/material/Chip";
 import { listEventsAdmin } from "@/features/events/queries";
+import PageHeader from "@/design-system/layout/PageHeader";
 import { formatDateTime } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -20,12 +20,14 @@ export default async function AdminEventsPage() {
 
   return (
     <Box>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-        <Typography variant="h5">Eventos</Typography>
-        <Button href="/admin/eventos/novo" variant="contained">
-          Novo evento
-        </Button>
-      </Box>
+      <PageHeader
+        title="Eventos"
+        action={
+          <Button href="/admin/eventos/novo" variant="contained">
+            Novo evento
+          </Button>
+        }
+      />
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>
