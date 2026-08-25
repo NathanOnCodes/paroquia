@@ -9,6 +9,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Chip from "@mui/material/Chip";
 import { listContributionsAdmin } from "@/features/contributions/queries";
+import PageHeader from "@/design-system/layout/PageHeader";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -18,9 +19,7 @@ export default async function ContribuicoesPage() {
 
   return (
     <Box>
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        Contribuições
-      </Typography>
+      <PageHeader title="Contribuições" />
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>
