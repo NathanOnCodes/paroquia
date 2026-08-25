@@ -14,7 +14,7 @@ export default function Error({
   retry: () => void;
 }) {
   useEffect(() => {
-    console.error(error);
+    if (process.env.NODE_ENV !== "production") console.error(error);
   }, [error]);
 
   return (
@@ -37,7 +37,7 @@ export default function Error({
         Ocorreu um erro inesperado ao carregar esta página. Tente novamente ou
         volte para o início.
       </Typography>
-      {error.digest && (
+      {process.env.NODE_ENV !== "production" && error.digest && (
         <Alert severity="warning" sx={{ maxWidth: 420 }}>
           Código do erro: {error.digest}
         </Alert>
