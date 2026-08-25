@@ -11,8 +11,9 @@ import Chip from "@mui/material/Chip";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { voidAction } from "@/lib/actions";
-import ServerForm from "@/components/admin/ServerForm";
+import ServerForm from "@/design-system/forms/ServerForm";
 import { listCommunitiesAdmin } from "@/features/communities/queries.admin";
+import PageHeader from "@/design-system/layout/PageHeader";
 import {
   createCommunityAction,
   setCommunityStatusAction,
@@ -25,9 +26,7 @@ export default async function ComunidadesPage() {
 
   return (
     <Box>
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        Comunidades
-      </Typography>
+      <PageHeader title="Comunidades" />
 
       <Paper sx={{ p: 3, mb: 3 }}>
         <Typography variant="h6" sx={{ mb: 2 }}>
