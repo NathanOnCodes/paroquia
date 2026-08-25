@@ -74,7 +74,7 @@ describe("Webhook Stripe", () => {
     const payload = JSON.stringify(event);
     const timestamp = Math.floor(Date.now() / 1000);
     const signedPayload = `${timestamp}.${payload}`;
-    const signature = createHmac("sha256", process.env.STRIPE_WEBHOOK_SECRET!)
+    const signature = createHmac("sha256", process.env.SEGREDO_WEBHOOK_STRIPE!)
       .update(signedPayload)
       .digest("hex");
     const header = `t=${timestamp},v1=${signature}`;
