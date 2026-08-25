@@ -5,7 +5,7 @@ export const STRIPE_ACCOUNT_CURRENCY = "brl";
 export const STRIPE_MIN_AMOUNT_CENTS = 100;
 
 export function getStripe(): Stripe {
-  return new Stripe(env.STRIPE_SECRET_KEY, {
+  return new Stripe(env.CHAVE_SECRETA_STRIPE, {
     apiVersion: "2026-07-29.dahlia",
     typescript: true,
   });
@@ -29,7 +29,7 @@ export function parseStripeSignature(
     return stripe.webhooks.constructEvent(
       body,
       signature,
-      env.STRIPE_WEBHOOK_SECRET
+    env.SEGREDO_WEBHOOK_STRIPE
     );
   } catch {
     return null;
