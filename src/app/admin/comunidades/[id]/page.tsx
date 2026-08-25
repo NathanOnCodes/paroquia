@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import ServerForm from "@/components/admin/ServerForm";
+import ServerForm from "@/design-system/forms/ServerForm";
 import { getCommunityById } from "@/features/communities/queries.admin";
 import { updateCommunityAction } from "@/features/communities/actions";
 

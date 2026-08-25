@@ -1,7 +1,7 @@
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
-import ServerForm from "@/components/admin/ServerForm";
+import ServerForm from "@/design-system/forms/ServerForm";
 import { createEventAction } from "@/features/events/actions";
 
 export default function NewEventPage() {

@@ -1,9 +1,9 @@
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
-import ServerForm from "@/components/admin/ServerForm";
+import ServerForm from "@/design-system/forms/ServerForm";
 import { createDonorAction } from "@/features/donors/actions";
-import { listAllCommunities } from "@/features/donors/queries";
+import { listAllCommunities } from "@/features/communities/queries.admin";
 
 export const dynamic = "force-dynamic";
 

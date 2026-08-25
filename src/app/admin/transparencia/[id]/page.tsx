@@ -15,8 +15,8 @@ import MenuItem from "@mui/material/MenuItem";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
-import ServerForm from "@/components/admin/ServerForm";
-import { getFinancialPeriodById } from "@/features/auth/queries.admin";
+import ServerForm from "@/design-system/forms/ServerForm";
+import { getFinancialPeriodById } from "@/features/transparency/queries.admin";
 import { listDocumentsForPeriod } from "@/features/transparency/queries.admin";
 import {
   addFinancialEntryAction,
@@ -114,7 +114,7 @@ export default async function FinancialPeriodDetailPage({
             <MenuItem value="income">Receita</MenuItem>
             <MenuItem value="expense">Despesa</MenuItem>
           </TextField>
-          <TextField label="Categoria" name="category" required fullWidth placeholder="Ex.: Dízimos, Manutenção" />
+          <TextField label="Categoria" name="category" required fullWidth placeholder="Ex.: Contribuições, Manutenção" />
           <TextField label="Descrição" name="description" required fullWidth />
           <TextField label="Valor (em centavos ou reais?)" name="amount_cents" required fullWidth placeholder="Valor em centavos, ex.: 5000 = R$ 50,00" />
           <TextField label="Data do lançamento" name="entry_date" type="date" required fullWidth slotProps={{ inputLabel: { shrink: true } }} />

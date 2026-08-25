@@ -28,21 +28,3 @@ export async function getDonorById(id: string): Promise<Donor | null> {
     .maybeSingle();
   return (data as Donor | null) ?? null;
 }
-
-export async function listAllCommunities(): Promise<CommunityWithSelect[]> {
-  const admin = createAdminClient();
-  const { data } = await admin
-    .from("communities")
-    .select("*")
-    .order("name", { ascending: true });
-  return (data ?? []) as CommunityWithSelect[];
-}
-
-export interface CommunityWithSelect {
-  id: string;
-  name: string;
-  description: string | null;
-  city: string | null;
-  is_active: boolean;
-  communities?: { name: string } | null;
-}

@@ -5,7 +5,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Paper from "@mui/material/Paper";
-import ServerForm from "@/components/admin/ServerForm";
+import ServerForm from "@/design-system/forms/ServerForm";
 import { getEventById } from "@/features/events/queries";
 import { updateEventAction } from "@/features/events/actions";
 import { formatDateTime } from "@/lib/format";
