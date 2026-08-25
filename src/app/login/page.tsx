@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
-import LoginForm from "@/components/auth/LoginForm";
+import LoginForm from "@/features/auth/components/LoginForm";
 
 export const metadata = {
   title: "Acesso restrito",
