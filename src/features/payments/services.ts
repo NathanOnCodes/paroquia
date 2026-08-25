@@ -11,6 +11,7 @@ import type {
   Donor,
   RecurringDonation,
 } from "@/lib/db-types";
+import { getSiteSettings } from "@/features/settings/queries";
 
 const PAYMENT_METHOD_TYPES = ["card", "pix"] as const;
 
@@ -114,12 +115,13 @@ export async function createSubscription(
   input: CreateSubscriptionInput
 ): Promise<{ subscription_id: string }> {
   const stripe = getStripe();
+  const settings = await getSiteSettings();
 
   const price = await stripe.prices.create({
     currency: "brl",
     unit_amount: input.amount_cents,
     recurring: { interval: "month" },
-    product_data: { name: "Dízimo recorrente mensal" },
+      product_data: { name: `${settings.site_name} - contribuição recorrente mensal` },
     metadata: { donor_id: input.donor_id },
   });
 
