@@ -1,5 +1,6 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import PageHeader from "@/design-system/layout/PageHeader";
 
 export const metadata = {
   title: "Política de privacidade",
@@ -8,18 +9,16 @@ export const metadata = {
 export default function PrivacidadePage() {
   return (
     <Box sx={{ maxWidth: 720, mx: "auto" }}>
-      <Typography variant="h4" sx={{ mb: 3 }}>
-        Política de privacidade
-      </Typography>
+      <PageHeader title="Política de privacidade" />
       <Typography variant="body1" sx={{ whiteSpace: "pre-wrap", lineHeight: 1.8 }} component="div">
         {`A paróquia respeita a sua privacidade. Este documento explica como tratamos os dados pessoais fornecidos neste site.
 
 Dados coletados:
 - Formulário de contato: nome, e-mail, telefone (opcional) e mensagem.
-- Dízimo online: nome, e-mail, telefone, cidade, bairro (opcional) e comunidade.
+- Contribuições online: nome, e-mail, telefone, cidade, bairro (opcional) e comunidade.
 
 Finalidade:
-- Gerenciar as contribuições de dízimo e emitir recibos.
+- Gerenciar as contribuições e emitir recibos.
 - Responder mensagens enviadas pelo formulário de contato.
 - Elaborar relatórios agregados e a prestação de contas (sem dados pessoais).
 
@@ -36,7 +35,7 @@ Direitos:
   entrando em contato pelo formulário do site ou pelo e-mail administrativo.
 
 Consentimento:
-- Ao utilizar o dízimo online ou o formulário de contato, você consente com o
+- Ao utilizar as doações online ou o formulário de contato, você consente com o
   tratamento descrito nesta política.
 
 Armazenamento:
