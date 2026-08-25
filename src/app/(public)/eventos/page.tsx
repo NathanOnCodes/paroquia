@@ -6,19 +6,20 @@ import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import { listPublishedEvents } from "@/features/events/queries";
 import { formatDateTime } from "@/lib/format";
+import { getSiteSettings } from "@/features/settings/queries";
+import PageHeader from "@/design-system/layout/PageHeader";
+import EmptyState from "@/design-system/feedback/EmptyState";
 
 export const dynamic = "force-dynamic";
 
 export default async function EventsPage() {
-  const events = await listPublishedEvents();
+  const [events, settings] = await Promise.all([listPublishedEvents(), getSiteSettings()]);
 
   return (
     <Box>
-      <Typography variant="h4" sx={{ mb: 3 }}>
-        Eventos da Paróquia São Benedito e Menino Jesus
-      </Typography>
+      <PageHeader title={`Eventos da ${settings.site_name}`} description="Confira os próximos encontros e atividades da comunidade." />
       {events.length === 0 ? (
-        <Typography color="text.secondary">Nenhum evento publicado no momento.</Typography>
+        <EmptyState title="Nenhum evento publicado" description="A agenda da comunidade será atualizada em breve." />
       ) : (
         <Grid container spacing={3}>
           {events.map((event) => (
