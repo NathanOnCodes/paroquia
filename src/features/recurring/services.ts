@@ -10,7 +10,7 @@ export async function createMagicToken(email: string): Promise<{
 }> {
   const rawToken = randomToken();
   const tokenHash = hashValue(rawToken);
-  const ttlMs = env.RECURRING_TOKEN_TTL_HOURS * 60 * 60 * 1000;
+  const ttlMs = env.TTL_HORAS_TOKEN_RECORRENTE * 60 * 60 * 1000;
 
   await createAdminClient().from("recurring_magic_tokens").insert({
     token_hash: tokenHash,
@@ -50,14 +50,14 @@ export async function sendRecurringManagementLink(email: string): Promise<void> 
   if (!donor) return;
 
   const { rawToken } = await createMagicToken(email);
-  const link = `${env.NEXT_PUBLIC_SITE_URL}/api/recurring/session?token=${rawToken}`;
+  const link = `${env.NEXT_PUBLIC_URL_SITE}/api/recurring/session?token=${rawToken}`;
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px;">
-      <h2>Gerenciar seu dízimo recorrente</h2>
+      <h2>Gerenciar sua doação recorrente</h2>
       <p>Olá, <strong>${escapeHtml(donor.full_name)}</strong>!</p>
-      <p>Você solicitou acesso para gerenciar suas recorrências de dízimo.</p>
-      <p>Este link é válido por <strong>${env.RECURRING_TOKEN_TTL_HOURS} hora(s)</strong> e pode ser usado apenas uma vez.</p>
+      <p>Você solicitou acesso para gerenciar suas doações recorrentes.</p>
+      <p>Este link é válido por <strong>${env.TTL_HORAS_TOKEN_RECORRENTE} hora(s)</strong> e pode ser usado apenas uma vez.</p>
       <p><a href="${link}" style="background:#1976d2;color:#fff;padding:12px 20px;text-decoration:none;border-radius:6px;display:inline-block;">Acessar minhas recorrências</a></p>
       <p>Se não foi você quem solicitou, ignore este e-mail.</p>
     </div>
@@ -65,7 +65,7 @@ export async function sendRecurringManagementLink(email: string): Promise<void> 
 
   await sendEmail({
     to: email,
-    subject: "Gerenciar seu dízimo recorrente",
+    subject: "Gerenciar sua doação recorrente",
     html,
   });
 }
