@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import Stripe from "stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email/resend";
+import { getSiteSettings } from "@/features/settings/queries";
 import {
   findContributionByInvoice,
   findContributionByPaymentIntent,
@@ -370,18 +371,20 @@ async function notifyReceipt(
 
   if (!donor?.email) return;
 
+  const settings = await getSiteSettings();
+
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px;">
-      <h2>Recibo do seu dízimo</h2>
+      <h2>Recibo da sua contribuição</h2>
       <p>Olá, <strong>${escapeHtml(donor.full_name)}</strong>!</p>
-      <p>Confirmamos a sua contribuição de <strong>${formatCurrency(amountCents)}</strong>.</p>
+      <p>Confirmamos a sua contribuição de <strong>${formatCurrency(amountCents)}</strong> para ${escapeHtml(settings.site_name)}.</p>
       <p>Que Deus abençoe você e sua família.</p>
     </div>
   `;
 
   await sendEmail({
     to: donor.email,
-    subject: "Recibo do seu dízimo",
+    subject: `Recibo de contribuição | ${settings.site_name}`,
     html,
   });
 }
