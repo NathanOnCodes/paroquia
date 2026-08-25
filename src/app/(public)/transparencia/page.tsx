@@ -4,6 +4,8 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
+import PageHeader from "@/design-system/layout/PageHeader";
+import EmptyState from "@/design-system/feedback/EmptyState";
 import { listPublishedPeriods } from "@/features/transparency/queries";
 import { formatCurrency, formatDate } from "@/lib/format";
 
@@ -14,16 +16,16 @@ export default async function TransparencyPage() {
 
   return (
     <Box>
-      <Typography variant="h4" sx={{ mb: 1 }}>
-        Transparência financeira
-      </Typography>
-      <Typography color="text.secondary" sx={{ mb: 3 }}>
-        Acompanhe quanto a paróquia arrecada, quanto gasta e confira os
-        documentos de prestação de contas (DRE). Nenhum dado pessoal é divulgado.
-      </Typography>
+      <PageHeader
+        title="Transparência financeira"
+        description="Acompanhe quanto a paróquia arrecada, quanto gasta e confira os documentos de prestação de contas (DRE). Nenhum dado pessoal é divulgado."
+      />
 
       {periods.length === 0 ? (
-        <AlertBox />
+        <EmptyState
+          title="Nada publicado ainda"
+          description="Os períodos de prestação de contas aparecerão aqui assim que forem publicados."
+        />
       ) : (
         <Grid container spacing={3}>
           {periods.map((period) => (
@@ -63,13 +65,5 @@ export default async function TransparencyPage() {
         </Grid>
       )}
     </Box>
-  );
-}
-
-function AlertBox() {
-  return (
-    <Typography color="text.secondary">
-      Nenhum período de prestação de contas publicado no momento.
-    </Typography>
   );
 }
