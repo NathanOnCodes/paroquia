@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
@@ -12,6 +11,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Chip from "@mui/material/Chip";
 import { listDonors } from "@/features/donors/queries";
+import PageHeader from "@/design-system/layout/PageHeader";
 import { formatDate } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -26,12 +26,14 @@ export default async function DizimistasPage({
 
   return (
     <Box>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2, flexWrap: "wrap", gap: 2 }}>
-        <Typography variant="h5">Dizimistas</Typography>
-        <Button href="/admin/dizimistas/novo" variant="contained">
-          Novo dizimista
-        </Button>
-      </Box>
+      <PageHeader
+        title="Dizimistas"
+        action={
+          <Button href="/admin/dizimistas/novo" variant="contained">
+            Novo dizimista
+          </Button>
+        }
+      />
 
       <form action="/admin/dizimistas" method="get" style={{ marginBottom: 16 }}>
         <TextField
