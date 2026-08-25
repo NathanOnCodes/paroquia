@@ -6,28 +6,27 @@ import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid";
 import { listPublishedEvents } from "@/features/events/queries";
 import { formatDateTime } from "@/lib/format";
+import { getSiteSettings } from "@/features/settings/queries";
+import EmptyState from "@/design-system/feedback/EmptyState";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const events = await listPublishedEvents();
+  const [events, settings] = await Promise.all([listPublishedEvents(), getSiteSettings()]);
 
   return (
     <Box>
       <Box sx={{ textAlign: "center", py: { xs: 4, md: 8 } }}>
         <Typography variant="h3" component="h1" sx={{ fontWeight: 700 }}>
-          Bem-vindo à Paróquia São Benedito e Menino Jesus
+          {settings.home_title || `Bem-vindo à ${settings.site_name}`}
         </Typography>
-        <Typography variant="subtitle1" color="primary" sx={{ mt: 1 }}>
-          Francisco Morato - SP
-        </Typography>
+        {settings.city && <Typography variant="subtitle1" color="secondary" sx={{ mt: 1 }}>{settings.city}</Typography>}
         <Typography variant="h6" sx={{ color: "text.secondary", mt: 1, maxWidth: 640, mx: "auto" }}>
-          Um espaço de fé, comunidade e transparência. Participe dos eventos,
-          contribua com o dízimo online e acompanhe a prestação de contas.
+          {settings.home_description || settings.description}
         </Typography>
         <Box sx={{ display: "flex", gap: 2, justifyContent: "center", mt: 4, flexWrap: "wrap" }}>
-          <Button href="/dizimo" variant="contained" size="large">
-            Fazer meu dízimo
+          <Button href="/doacoes" variant="contained" color="secondary" size="large">
+            Fazer uma doação
           </Button>
           <Button href="/transparencia" variant="outlined" size="large">
             Ver transparência
@@ -40,7 +39,7 @@ export default async function HomePage() {
           Próximos eventos
         </Typography>
         {events.length === 0 ? (
-          <Typography color="text.secondary">Nenhum evento publicado no momento.</Typography>
+          <EmptyState title="Nenhum evento publicado" description="A agenda da comunidade será atualizada em breve." />
         ) : (
           <Grid container spacing={3}>
             {events.slice(0, 6).map((event) => (
