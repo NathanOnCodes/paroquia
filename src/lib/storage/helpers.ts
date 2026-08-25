@@ -3,7 +3,7 @@ import { env } from "@/lib/env";
 
 export function getEventImageUrl(imagePath: string | null): string | null {
   if (!imagePath) return null;
-  return `${env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/events/${imagePath}`;
+  return `${env.NEXT_PUBLIC_URL_SUPABASE}/storage/v1/object/public/events/${imagePath}`;
 }
 
 export async function getTransparencyDocumentUrl(
