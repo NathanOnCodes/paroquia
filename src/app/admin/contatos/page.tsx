@@ -10,6 +10,7 @@ import TableRow from "@mui/material/TableRow";
 import Chip from "@mui/material/Chip";
 import Button from "@mui/material/Button";
 import { listContactsAdmin } from "@/features/contact/queries.admin";
+import PageHeader from "@/design-system/layout/PageHeader";
 import { setContactStatusAction } from "@/features/contact/actions";
 import { voidAction } from "@/lib/actions";
 import { formatDateTime } from "@/lib/format";
@@ -21,9 +22,7 @@ export default async function AdminContactsPage() {
 
   return (
     <Box>
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        Mensagens de contato
-      </Typography>
+      <PageHeader title="Mensagens de contato" />
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>
