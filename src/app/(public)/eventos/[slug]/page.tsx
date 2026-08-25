@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import PageHeader from "@/design-system/layout/PageHeader";
 import { getPublishedEventBySlug } from "@/features/events/queries";
 import { formatDateTime } from "@/lib/format";
 import { getEventImageUrl } from "@/lib/storage/helpers";
@@ -24,18 +25,10 @@ export default async function EventDetailPage({
       <Button href="/eventos" sx={{ mb: 2 }}>
         ← Voltar para eventos
       </Button>
-      <Typography variant="h4" component="h1" sx={{ mb: 1 }}>
-        {event.title}
-      </Typography>
-      <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 2 }}>
-        {formatDateTime(event.starts_at)}
-        {event.ends_at && ` até ${formatDateTime(event.ends_at)}`}
-      </Typography>
-      {event.location && (
-        <Typography variant="body1" sx={{ mb: 2 }}>
-          📍 {event.location}
-        </Typography>
-      )}
+      <PageHeader
+        title={event.title}
+        description={`${formatDateTime(event.starts_at)}${event.ends_at ? ` até ${formatDateTime(event.ends_at)}` : ""}${event.location ? ` · ${event.location}` : ""}`}
+      />
       {imageUrl && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
