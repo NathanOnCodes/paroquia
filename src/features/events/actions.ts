@@ -38,9 +38,9 @@ export async function createEventAction(formData: FormData): Promise<{
     if (!ALLOWED_MIME.has(file.type)) {
       return { error: "Formato de imagem inválido (use JPG, PNG ou WebP)" };
     }
-    const maxBytes = env.MAX_FILE_SIZE_MB * 1024 * 1024;
+    const maxBytes = env.TAMANHO_MAXIMO_ARQUIVO_MB * 1024 * 1024;
     if (file.size > maxBytes) {
-      return { error: `Imagem acima do limite de ${env.MAX_FILE_SIZE_MB}MB` };
+      return { error: `Imagem acima do limite de ${env.TAMANHO_MAXIMO_ARQUIVO_MB}MB` };
     }
     imagePath = await uploadEventImage(file);
   }
