@@ -14,7 +14,7 @@ export default function GlobalError({
   retry: () => void;
 }) {
   useEffect(() => {
-    console.error(error);
+    if (process.env.NODE_ENV !== "production") console.error(error);
   }, [error]);
 
   return (
@@ -26,7 +26,7 @@ export default function GlobalError({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "#faf9f7",
+          backgroundColor: "#f8f9fa",
           color: "#1c1c1c",
           fontFamily:
             "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif",
@@ -49,7 +49,7 @@ export default function GlobalError({
           <p style={{ color: "#555", margin: "0 0 1.5rem", lineHeight: 1.6 }}>
             Ocorreu um erro inesperado. Tente novamente ou volte mais tarde.
           </p>
-          {error.digest && (
+          {process.env.NODE_ENV !== "production" && error.digest && (
             <p
               style={{
                 fontSize: "0.8rem",
