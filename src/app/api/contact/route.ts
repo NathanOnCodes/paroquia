@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { hashValue } from "@/lib/format";
 import { sendEmail } from "@/lib/email/resend";
 import { env } from "@/lib/env";
+import { getSiteSettings } from "@/features/settings/queries";
 
 export const runtime = "nodejs";
 
@@ -49,7 +50,8 @@ export async function POST(request: Request) {
       return jsonError("Falha ao enviar mensagem", 500);
     }
 
-    if (env.ADMIN_NOTIFICATION_EMAIL) {
+    if (env.EMAIL_NOTIFICACAO_ADMIN) {
+      const settings = await getSiteSettings();
       const html = `
         <div style="font-family: Arial, sans-serif;">
           <h3>Nova mensagem de contato</h3>
@@ -61,8 +63,8 @@ export async function POST(request: Request) {
         </div>
       `;
       await sendEmail({
-        to: env.ADMIN_NOTIFICATION_EMAIL,
-        subject: "Nova mensagem no site da Paróquia São Benedito e Menino Jesus",
+        to: env.EMAIL_NOTIFICACAO_ADMIN,
+        subject: `Nova mensagem no site da ${settings.site_name}`,
         html,
       });
     }
