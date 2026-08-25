@@ -25,6 +25,7 @@ import PaymentsIcon from "@mui/icons-material/Payments";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import MailIcon from "@mui/icons-material/Mail";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useRouter } from "next/navigation";
 import { ROLE_LABELS } from "@/lib/auth/roles";
@@ -36,7 +37,7 @@ export default function AdminShell({
   user,
   children,
 }: {
-  user: { name: string; email: string; role: Role };
+  user: { name: string; email: string; role: Role; siteName: string };
   children: React.ReactNode;
 }) {
   const router = useRouter();
@@ -54,13 +55,14 @@ export default function AdminShell({
     { href: "/admin/transparencia", label: "Transparência", icon: <AccountBalanceIcon />, show: true },
     { href: "/admin/contatos", label: "Mensagens", icon: <MailIcon />, show: true },
     { href: "/admin/usuarios", label: "Usuários", icon: <AdminPanelSettingsIcon />, show: isAdmin },
+    { href: "/admin/configuracoes", label: "Configurações", icon: <SettingsIcon />, show: isAdmin },
   ];
 
   const drawerContent = (
     <Box>
       <Toolbar>
         <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
-          Paróquia São Benedito e Menino Jesus
+          {user.siteName}
         </Typography>
       </Toolbar>
       <Divider />
