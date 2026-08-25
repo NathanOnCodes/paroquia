@@ -1,8 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { ChurchEvent } from "@/lib/db-types";
+import { env } from "@/lib/env";
 
 export async function listPublishedEvents(): Promise<ChurchEvent[]> {
+  if (env.LOCAL_DEMO_MODE) return [];
+
   const supabase = await createClient();
   const { data } = await supabase
     .from("events")
