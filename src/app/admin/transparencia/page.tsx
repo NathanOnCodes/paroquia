@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -10,7 +9,8 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Chip from "@mui/material/Chip";
-import { listFinancialPeriodsAdmin } from "@/features/auth/queries.admin";
+import { listFinancialPeriodsAdmin } from "@/features/transparency/queries.admin";
+import PageHeader from "@/design-system/layout/PageHeader";
 import { changeFinancialPeriodStatusAction } from "@/features/transparency/actions";
 import { voidAction } from "@/lib/actions";
 import { formatDate } from "@/lib/format";
@@ -24,12 +24,14 @@ export default async function AdminTransparencyPage() {
 
   return (
     <Box>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-        <Typography variant="h5">Transparência financeira</Typography>
-        <Button href="/admin/transparencia/novo" variant="contained">
-          Novo período
-        </Button>
-      </Box>
+      <PageHeader
+        title="Transparência financeira"
+        action={
+          <Button href="/admin/transparencia/novo" variant="contained">
+            Novo período
+          </Button>
+        }
+      />
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>
