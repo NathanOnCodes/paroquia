@@ -7,8 +7,8 @@ import { env } from "@/lib/env";
  */
 export function createAdminClient() {
   return createSupabaseClient(
-    env.NEXT_PUBLIC_SUPABASE_URL,
-    env.SUPABASE_SERVICE_ROLE_KEY,
+    env.NEXT_PUBLIC_URL_SUPABASE,
+    env.CHAVE_SERVICO_SUPABASE,
     {
       auth: {
         autoRefreshToken: false,
