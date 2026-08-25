@@ -86,6 +86,6 @@ export async function cancelRecurringAction(formData: FormData): Promise<{
     metadata: { source: "public" },
   });
 
-  revalidatePath("/dizimo/gerenciar");
+  revalidatePath("/doacoes/gerenciar");
   return { ok: true };
 }
