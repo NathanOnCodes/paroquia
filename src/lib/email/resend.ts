@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 import { env } from "@/lib/env";
 
-const resend = new Resend(env.RESEND_API_KEY);
+const resend = new Resend(env.CHAVE_API_RESEND);
 
 export interface EmailRecipient {
   to: string;
@@ -17,7 +17,7 @@ export async function sendEmail({
   text,
 }: EmailRecipient): Promise<{ ok: boolean; id?: string; error?: string }> {
   const { data, error } = await resend.emails.send({
-    from: env.EMAIL_FROM,
+    from: env.EMAIL_REMETENTE,
     to: [to],
     subject,
     html,
