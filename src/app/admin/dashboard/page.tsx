@@ -9,6 +9,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { getDashboardSummary } from "@/features/dashboard/queries";
+import PageHeader from "@/design-system/layout/PageHeader";
 import { formatCurrency } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -29,9 +30,7 @@ export default async function DashboardPage() {
 
   return (
     <Box>
-      <Typography variant="h5" sx={{ mb: 3 }}>
-        Dashboard
-      </Typography>
+      <PageHeader title="Dashboard" />
 
       <Grid container spacing={2} sx={{ mb: 4 }}>
         {cards.map((card) => (
