@@ -14,9 +14,9 @@ export async function GET(request: Request) {
   const token = searchParams.get("token");
 
   const baseUrl = new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
+    process.env.NEXT_PUBLIC_URL_SITE ?? "http://localhost:3000"
   );
-  const home = `${baseUrl}/dizimo/gerenciar`;
+  const home = `${baseUrl}/doacoes/gerenciar`;
 
   if (!token) {
     return NextResponse.redirect(home);
