@@ -16,8 +16,8 @@ export default function PublicHeader({ settings }: { settings: SiteSettings }) {
           sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 2, px: { xs: 1, sm: 2 } }}
         >
           <Link href="/" style={{ textDecoration: "none" }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "text.primary", "&:hover": { color: "secondary.main" } }}>
-              <BrandMark />
+            <Box sx={{ display: "flex", alignItems: "center", gap: "2px", color: "text.primary", "&:hover": { color: "secondary.main" } }}>
+              <BrandMark size={36} />
               <Box component="span" sx={{ fontSize: { xs: 15, sm: 20 }, fontWeight: 700, lineHeight: 1.15, display: "block", maxWidth: { xs: 190, sm: 360 } }}>
                 {settings.site_name}
               </Box>
