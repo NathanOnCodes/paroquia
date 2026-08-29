@@ -28,11 +28,11 @@ export default async function AdminContactsPage() {
           <TableHead>
             <TableRow>
               <TableCell>Nome</TableCell>
-              <TableCell>Contato</TableCell>
-              <TableCell>Mensagem</TableCell>
+              <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>Contato</TableCell>
+              <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>Mensagem</TableCell>
               <TableCell>Status</TableCell>
-              <TableCell>Data</TableCell>
-              <TableCell sx={{ width: 180 }}>Ações</TableCell>
+              <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>Data</TableCell>
+              <TableCell sx={{ minWidth: 120 }}>Ações</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -44,7 +44,7 @@ export default async function AdminContactsPage() {
             {contacts.map((contact) => (
               <TableRow key={contact.id}>
                 <TableCell>{contact.name}</TableCell>
-                <TableCell>
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
                   {contact.email}
                   {contact.phone && (
                     <Typography variant="caption" sx={{ display: "block" }} color="text.secondary">
@@ -52,7 +52,7 @@ export default async function AdminContactsPage() {
                     </Typography>
                   )}
                 </TableCell>
-                <TableCell sx={{ maxWidth: 320 }}>
+                <TableCell sx={{ display: { xs: "none", md: "table-cell" }, maxWidth: 320 }}>
                   <Typography variant="body2" sx={{ whiteSpace: "pre-wrap" }}>
                     {contact.message}
                   </Typography>
@@ -64,7 +64,7 @@ export default async function AdminContactsPage() {
                     color={contact.status === "new" ? "warning" : contact.status === "resolved" ? "success" : "default"}
                   />
                 </TableCell>
-                <TableCell>{formatDateTime(contact.created_at)}</TableCell>
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>{formatDateTime(contact.created_at)}</TableCell>
                 <TableCell>
                   <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
                     {contact.status === "new" && (

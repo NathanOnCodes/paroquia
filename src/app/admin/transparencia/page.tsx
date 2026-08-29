@@ -37,9 +37,9 @@ export default async function AdminTransparencyPage() {
           <TableHead>
             <TableRow>
               <TableCell>Nome</TableCell>
-              <TableCell>Período</TableCell>
+              <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>Período</TableCell>
               <TableCell>Status</TableCell>
-              <TableCell sx={{ width: 320 }}>Ações</TableCell>
+              <TableCell sx={{ minWidth: 120 }}>Ações</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -55,7 +55,7 @@ export default async function AdminTransparencyPage() {
                     <strong>{period.name}</strong>
                   </Link>
                 </TableCell>
-                <TableCell>
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
                   {formatDate(period.start_date)} a {formatDate(period.end_date)}
                 </TableCell>
                 <TableCell>

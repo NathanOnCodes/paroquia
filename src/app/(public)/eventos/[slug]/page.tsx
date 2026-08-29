@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import PageHeader from "@/design-system/layout/PageHeader";
+import EventImage from "@/features/events/components/EventImage";
 import { getPublishedEventBySlug } from "@/features/events/queries";
 import { formatDateTime } from "@/lib/format";
 import { getEventImageUrl } from "@/lib/storage/helpers";
@@ -30,12 +31,7 @@ export default async function EventDetailPage({
         description={`${formatDateTime(event.starts_at)}${event.ends_at ? ` até ${formatDateTime(event.ends_at)}` : ""}${event.location ? ` · ${event.location}` : ""}`}
       />
       {imageUrl && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={imageUrl}
-          alt={event.title}
-          style={{ width: "100%", borderRadius: 12, marginBottom: 16 }}
-        />
+        <EventImage src={imageUrl} alt={event.title} />
       )}
       {event.description && (
         <Typography

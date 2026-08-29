@@ -25,11 +25,11 @@ export default async function ContribuicoesPage() {
           <TableHead>
             <TableRow>
               <TableCell>Dizimista</TableCell>
-              <TableCell>Comunidade</TableCell>
+              <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>Comunidade</TableCell>
               <TableCell>Valor</TableCell>
-              <TableCell>Tipo</TableCell>
+              <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>Tipo</TableCell>
               <TableCell>Status</TableCell>
-              <TableCell>Data</TableCell>
+              <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>Data</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -46,11 +46,11 @@ export default async function ContribuicoesPage() {
                     {c.donors?.email}
                   </Typography>
                 </TableCell>
-                <TableCell>
+                <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
                   {c.communities?.name ?? c.community_name ?? c.donors?.community_name ?? ""}
                 </TableCell>
                 <TableCell>{formatCurrency(c.amount_cents)}</TableCell>
-                <TableCell>{c.payment_type === "recurring" ? "Recorrente" : "Avulso"}</TableCell>
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>{c.payment_type === "recurring" ? "Recorrente" : "Avulso"}</TableCell>
                 <TableCell>
                   <Chip
                     size="small"
@@ -58,7 +58,7 @@ export default async function ContribuicoesPage() {
                     color={c.status === "paid" ? "success" : c.status === "pending" ? "warning" : c.status === "failed" || c.status === "canceled" ? "error" : "default"}
                   />
                 </TableCell>
-                <TableCell>{formatDateTime(c.created_at)}</TableCell>
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>{formatDateTime(c.created_at)}</TableCell>
               </TableRow>
             ))}
           </TableBody>

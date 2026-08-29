@@ -43,9 +43,9 @@ export default async function ComunidadesPage() {
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell sx={{ width: 40 }}>Nome</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell sx={{ width: 260 }}>Ações</TableCell>
+              <TableCell>Nome</TableCell>
+              <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>Status</TableCell>
+              <TableCell sx={{ minWidth: 120 }}>Ações</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -64,7 +64,7 @@ export default async function ComunidadesPage() {
                     </Typography>
                   )}
                 </TableCell>
-                <TableCell>
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
                   <Chip size="small" label={community.is_active ? "Ativa" : "Inativa"} color={community.is_active ? "success" : "default"} />
                 </TableCell>
                 <TableCell>

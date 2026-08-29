@@ -11,7 +11,7 @@ export default async function PublicLayout({ children }: { children: React.React
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh", bgcolor: "background.default" }}>
       <PublicHeader settings={settings} />
       <Box component="main" sx={{ flex: 1 }}>
-        <Container maxWidth="lg" sx={{ py: { xs: 3, md: 6 } }}>
+        <Container maxWidth="lg" sx={{ py: { xs: 12, md: 6 } }}>
           {children}
         </Container>
       </Box>

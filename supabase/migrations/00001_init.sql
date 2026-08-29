@@ -24,6 +24,42 @@ begin
   return new;
 end;
 $$;
+
+-- ---------- profiles (criado antes das funções que o referenciam) ----------
+create table public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  full_name text not null default '',
+  email text not null,
+  role text not null check (role in ('admin', 'assistente')),
+  is_active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create trigger profiles_set_updated_at
+  before update on public.profiles
+  for each row execute procedure moddatetime(updated_at);
+
+alter table public.profiles enable row level security;
+
+-- Impede que o cliente altere o papel diretamente (deve passar pelo servidor).
+create or replace function public.prevent_role_change()
+returns trigger
+language plpgsql
+as $$
+begin
+  if old.role is distinct from new.role then
+    raise exception 'role cannot be changed via client';
+  end if;
+  return new;
+end;
+$$;
+
+create trigger profiles_prevent_role_change
+  before update on public.profiles
+  for each row execute procedure public.prevent_role_change();
+
+-- ---------- Funções que dependem de profiles ----------
 create or replace function public.is_staff()
 returns boolean
 language sql
@@ -56,23 +92,7 @@ as $$
   );
 $$;
 
--- ---------- profiles ----------
-create table public.profiles (
-  id uuid primary key references auth.users(id) on delete cascade,
-  full_name text not null default '',
-  email text not null,
-  role text not null check (role in ('admin', 'assistente')),
-  is_active boolean not null default true,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
-
-create trigger profiles_set_updated_at
-  before update on public.profiles
-  for each row execute procedure moddatetime(updated_at);
-
-alter table public.profiles enable row level security;
-
+-- Políticas de profiles (precisa de is_staff)
 create policy "profiles_select_own"
   on public.profiles for select
   using (auth.uid() = id or is_staff());
@@ -81,23 +101,6 @@ create policy "profiles_update_own"
   on public.profiles for update
   using (auth.uid() = id)
   with check (auth.uid() = id);
-
--- Impede que o cliente altere o papel diretamente (deve passar pelo servidor).
-create or replace function public.prevent_role_change()
-returns trigger
-language plpgsql
-as $$
-begin
-  if old.role is distinct from new.role then
-    raise exception 'role cannot be changed via client';
-  end if;
-  return new;
-end;
-$$;
-
-create trigger profiles_prevent_role_change
-  before update on public.profiles
-  for each row execute procedure public.prevent_role_change();
 
 -- ---------- communities ----------
 create table public.communities (

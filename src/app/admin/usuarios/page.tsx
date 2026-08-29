@@ -51,8 +51,8 @@ export default async function AdminUsersPage() {
           <TableHead>
             <TableRow>
               <TableCell>Nome</TableCell>
-              <TableCell>E-mail</TableCell>
-              <TableCell>Papel</TableCell>
+              <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>E-mail</TableCell>
+              <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>Papel</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Alterar papel/status</TableCell>
             </TableRow>
@@ -61,8 +61,8 @@ export default async function AdminUsersPage() {
             {users.map((user) => (
               <TableRow key={user.id}>
                 <TableCell>{user.full_name}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>
+                <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>{user.email}</TableCell>
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
                   <Chip size="small" label={ROLE_LABELS[user.role]} color={user.role === "admin" ? "primary" : "default"} />
                 </TableCell>
                 <TableCell>
@@ -80,7 +80,7 @@ export default async function AdminUsersPage() {
                       successMessage="Usuário atualizado!"
                     >
                       <input type="hidden" name="id" value={user.id} />
-                      <Box sx={{ display: "flex", gap: 1 }}>
+                      <Box sx={{ display: "flex", gap: 1, flexDirection: { xs: "column", sm: "row" } }}>
                         <TextField size="small" label="Nome" name="full_name" defaultValue={user.full_name} />
                         <TextField select size="small" label="Papel" name="role" defaultValue={user.role} sx={{ minWidth: 130 }}>
                           <MenuItem value="assistente">Assistente</MenuItem>

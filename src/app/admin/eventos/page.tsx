@@ -34,7 +34,7 @@ export default async function AdminEventsPage() {
             <TableRow>
               <TableCell>Título</TableCell>
               <TableCell>Data</TableCell>
-              <TableCell>Local</TableCell>
+              <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>Local</TableCell>
               <TableCell>Status</TableCell>
             </TableRow>
           </TableHead>
@@ -52,7 +52,7 @@ export default async function AdminEventsPage() {
                   </Link>
                 </TableCell>
                 <TableCell>{formatDateTime(event.starts_at)}</TableCell>
-                <TableCell>{event.location || ""}</TableCell>
+                <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>{event.location || ""}</TableCell>
                 <TableCell>
                   <Chip
                     size="small"

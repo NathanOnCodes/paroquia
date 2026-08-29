@@ -6,6 +6,9 @@ import TextField from "@mui/material/TextField";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
+import InputAdornment from "@mui/material/InputAdornment";
+import EmailIcon from "@mui/icons-material/Email";
+import LockIcon from "@mui/icons-material/Lock";
 import { loginAction } from "@/features/auth/actions";
 
 export default function LoginForm() {
@@ -23,8 +26,8 @@ export default function LoginForm() {
   }
 
   return (
-    <Box component="form" action={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-      {error && <Alert severity="error">{error}</Alert>}
+    <Box component="form" action={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+      {error && <Alert severity="error" sx={{ borderRadius: 2 }}>{error}</Alert>}
       <TextField
         label="E-mail"
         name="email"
@@ -32,6 +35,15 @@ export default function LoginForm() {
         required
         autoComplete="email"
         fullWidth
+        slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position="start">
+                <EmailIcon color="action" />
+              </InputAdornment>
+            ),
+          },
+        }}
       />
       <TextField
         label="Senha"
@@ -40,8 +52,23 @@ export default function LoginForm() {
         required
         autoComplete="current-password"
         fullWidth
+        slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position="start">
+                <LockIcon color="action" />
+              </InputAdornment>
+            ),
+          },
+        }}
       />
-      <Button type="submit" variant="contained" size="large" disabled={loading}>
+      <Button
+        type="submit"
+        variant="contained"
+        size="large"
+        disabled={loading}
+        sx={{ mt: 1, minHeight: 48 }}
+      >
         {loading ? <CircularProgress size={22} color="inherit" /> : "Entrar"}
       </Button>
     </Box>

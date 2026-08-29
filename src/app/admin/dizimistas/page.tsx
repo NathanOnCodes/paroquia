@@ -36,16 +36,18 @@ export default async function DizimistasPage({
       />
 
       <form action="/admin/dizimistas" method="get" style={{ marginBottom: 16 }}>
-        <TextField
-          name="q"
-          defaultValue={q ?? ""}
-          placeholder="Buscar por nome, e-mail ou telefone..."
-          size="small"
-          sx={{ minWidth: 300 }}
-        />
-        <Button type="submit" variant="outlined" sx={{ ml: 1 }}>
-          Buscar
-        </Button>
+        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+          <TextField
+            name="q"
+            defaultValue={q ?? ""}
+            placeholder="Buscar por nome, e-mail ou telefone..."
+            size="small"
+            sx={{ minWidth: { xs: 0, sm: 300 }, flex: 1 }}
+          />
+          <Button type="submit" variant="outlined">
+            Buscar
+          </Button>
+        </Box>
       </form>
 
       <TableContainer component={Paper}>
@@ -53,11 +55,11 @@ export default async function DizimistasPage({
           <TableHead>
             <TableRow>
               <TableCell>Nome</TableCell>
-              <TableCell>E-mail</TableCell>
-              <TableCell>Telefone</TableCell>
-              <TableCell>Comunidade</TableCell>
+              <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>E-mail</TableCell>
+              <TableCell sx={{ display: { xs: "none", lg: "table-cell" } }}>Telefone</TableCell>
+              <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>Comunidade</TableCell>
               <TableCell>Status</TableCell>
-              <TableCell>Cadastro</TableCell>
+              <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>Cadastro</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -73,9 +75,9 @@ export default async function DizimistasPage({
                     <strong>{donor.full_name}</strong>
                   </Link>
                 </TableCell>
-                <TableCell>{donor.email}</TableCell>
-                <TableCell>{donor.phone ?? ""}</TableCell>
-                <TableCell>
+                <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>{donor.email}</TableCell>
+                <TableCell sx={{ display: { xs: "none", lg: "table-cell" } }}>{donor.phone ?? ""}</TableCell>
+                <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
                   {(donor as unknown as { communities?: { name: string } }).communities?.name ??
                     donor.community_name ??
                     ""}
@@ -87,7 +89,7 @@ export default async function DizimistasPage({
                     color={donor.is_active ? "success" : "default"}
                   />
                 </TableCell>
-                <TableCell>{formatDate(donor.created_at)}</TableCell>
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>{formatDate(donor.created_at)}</TableCell>
               </TableRow>
             ))}
           </TableBody>

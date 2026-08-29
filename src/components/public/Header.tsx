@@ -17,23 +17,23 @@ export default function PublicHeader({ settings }: { settings: SiteSettings }) {
         >
           <Link href="/" style={{ textDecoration: "none" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: "2px", color: "text.primary", "&:hover": { color: "secondary.main" } }}>
-              <BrandMark size={36} />
-              <Box component="span" sx={{ fontSize: { xs: 15, sm: 20 }, fontWeight: 700, lineHeight: 1.15, display: "block", maxWidth: { xs: 190, sm: 360 } }}>
+              <BrandMark size={28} />
+              <Box component="span" sx={{ fontSize: { xs: 15, sm: 20 }, fontWeight: 700, lineHeight: 1.15, display: "block", whiteSpace: "nowrap" }}>
                 {settings.site_name}
               </Box>
             </Box>
           </Link>
-          <Box sx={{ display: "flex", gap: { xs: 0.5, sm: 1 }, flexWrap: "wrap" }}>
-            <Button href="/eventos" color="inherit" sx={{ "&:hover": { color: "secondary.main", bgcolor: "transparent" } }}>
+          <Box sx={{ display: "flex", gap: { xs: 0, sm: 1 }, flexWrap: "nowrap" }}>
+            <Button href="/eventos" color="inherit" sx={{ fontSize: { xs: 13, sm: 14 }, px: { xs: 1, sm: 1.5 }, minWidth: "auto", "&:hover": { color: "secondary.main", bgcolor: "transparent" } }}>
               Eventos
             </Button>
-            <Button href="/doacoes" color="inherit" sx={{ "&:hover": { color: "secondary.main", bgcolor: "transparent" } }}>
+            <Button href="/doacoes" color="inherit" sx={{ fontSize: { xs: 13, sm: 14 }, px: { xs: 1, sm: 1.5 }, minWidth: "auto", "&:hover": { color: "secondary.main", bgcolor: "transparent" } }}>
               Doações
             </Button>
-            <Button href="/transparencia" color="inherit" sx={{ "&:hover": { color: "secondary.main", bgcolor: "transparent" } }}>
+            <Button href="/transparencia" color="inherit" sx={{ fontSize: { xs: 13, sm: 14 }, px: { xs: 1, sm: 1.5 }, minWidth: "auto", "&:hover": { color: "secondary.main", bgcolor: "transparent" } }}>
               Transparência
             </Button>
-            <Button href="/contato" color="inherit" sx={{ "&:hover": { color: "secondary.main", bgcolor: "transparent" } }}>
+            <Button href="/contato" color="inherit" sx={{ fontSize: { xs: 13, sm: 14 }, px: { xs: 1, sm: 1.5 }, minWidth: "auto", display: { xs: "none", sm: "inline-flex" }, "&:hover": { color: "secondary.main", bgcolor: "transparent" } }}>
               Contato
             </Button>
           </Box>

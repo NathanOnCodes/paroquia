@@ -1,7 +1,8 @@
 import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
+import BrandMark from "@/design-system/branding/BrandMark";
+import Surface from "@/design-system/layout/Surface";
 import LoginForm from "@/features/auth/components/LoginForm";
 
 export const metadata = {
@@ -20,20 +21,31 @@ export default function LoginPage() {
         p: 2,
       }}
     >
-      <Paper sx={{ p: 4, maxWidth: 400, width: "100%" }} elevation={3}>
-        <Typography variant="h5" sx={{ mb: 0.5, textAlign: "center" }}>
-          Acesso restrito
-        </Typography>
-        <Typography color="text.secondary" sx={{ mb: 3, textAlign: "center" }}>
-          Área exclusiva do pároco e seus assistentes.
-        </Typography>
+      <Surface sx={{ maxWidth: 400, width: "100%", bgcolor: "white" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mb: 3 }}>
+          <BrandMark size={56} sx={{ mb: 2 }} />
+          <Typography variant="h5" sx={{ fontWeight: 700 }}>
+            Acesso restrito
+          </Typography>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ mt: 1, textAlign: "center", fontStyle: "italic", maxWidth: 320 }}
+          >
+            &ldquo;Depois de Deus, o sacerdote é tudo!&rdquo;
+            <br />
+            <Box component="span" sx={{ fontSize: "0.75rem", opacity: 0.7 }}>
+              — São João Maria Vianney
+            </Box>
+          </Typography>
+        </Box>
         <LoginForm />
         <Typography variant="body2" sx={{ mt: 3, textAlign: "center" }}>
           <Link href="/" underline="hover">
             ← Voltar ao site
           </Link>
         </Typography>
-      </Paper>
+      </Surface>
     </Box>
   );
 }
