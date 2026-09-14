@@ -11,8 +11,8 @@ import Chip from "@mui/material/Chip";
 import Button from "@mui/material/Button";
 import { listContactsAdmin } from "@/features/contact/queries.admin";
 import PageHeader from "@/design-system/layout/PageHeader";
+import ActionForm from "@/design-system/forms/ActionForm";
 import { setContactStatusAction } from "@/features/contact/actions";
-import { voidAction } from "@/lib/actions";
 import { formatDateTime } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -68,31 +68,31 @@ export default async function AdminContactsPage() {
                 <TableCell>
                   <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
                     {contact.status === "new" && (
-                      <form action={voidAction(setContactStatusAction)}>
+                      <ActionForm action={setContactStatusAction}>
                         <input type="hidden" name="id" value={contact.id} />
                         <input type="hidden" name="status" value="in_progress" />
                         <Button size="small" type="submit" variant="outlined">
                           Em atendimento
                         </Button>
-                      </form>
+                      </ActionForm>
                     )}
                     {contact.status !== "resolved" && contact.status !== "archived" && (
-                      <form action={voidAction(setContactStatusAction)}>
+                      <ActionForm action={setContactStatusAction}>
                         <input type="hidden" name="id" value={contact.id} />
                         <input type="hidden" name="status" value="resolved" />
                         <Button size="small" type="submit" variant="outlined" color="success">
                           Resolver
                         </Button>
-                      </form>
+                      </ActionForm>
                     )}
                     {contact.status !== "archived" && (
-                      <form action={voidAction(setContactStatusAction)}>
+                      <ActionForm action={setContactStatusAction}>
                         <input type="hidden" name="id" value={contact.id} />
                         <input type="hidden" name="status" value="archived" />
                         <Button size="small" type="submit" variant="outlined" color="error">
                           Arquivar
                         </Button>
-                      </form>
+                      </ActionForm>
                     )}
                   </Box>
                 </TableCell>

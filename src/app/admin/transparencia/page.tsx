@@ -11,8 +11,8 @@ import TableRow from "@mui/material/TableRow";
 import Chip from "@mui/material/Chip";
 import { listFinancialPeriodsAdmin } from "@/features/transparency/queries.admin";
 import PageHeader from "@/design-system/layout/PageHeader";
+import ActionForm from "@/design-system/forms/ActionForm";
 import { changeFinancialPeriodStatusAction } from "@/features/transparency/actions";
-import { voidAction } from "@/lib/actions";
 import { formatDate } from "@/lib/format";
 import { requireRole } from "@/lib/auth/authorization";
 
@@ -71,32 +71,32 @@ export default async function AdminTransparencyPage() {
                       Abrir
                     </Button>
                     {period.status === "draft" && (
-                      <form action={voidAction(changeFinancialPeriodStatusAction)}>
+                      <ActionForm action={changeFinancialPeriodStatusAction}>
                         <input type="hidden" name="id" value={period.id} />
                         <input type="hidden" name="status" value="review" />
                         <Button size="small" type="submit" variant="outlined" color="warning">
                           Enviar para revisão
                         </Button>
-                      </form>
+                      </ActionForm>
                     )}
                     {(period.status === "review" || period.status === "draft") &&
                       user.profile.role === "admin" && (
-                        <form action={voidAction(changeFinancialPeriodStatusAction)}>
+                        <ActionForm action={changeFinancialPeriodStatusAction}>
                           <input type="hidden" name="id" value={period.id} />
                           <input type="hidden" name="status" value="published" />
                           <Button size="small" type="submit" variant="contained" color="success">
                             Publicar
                           </Button>
-                        </form>
+                        </ActionForm>
                       )}
                     {period.status === "published" && user.profile.role === "admin" && (
-                      <form action={voidAction(changeFinancialPeriodStatusAction)}>
+                      <ActionForm action={changeFinancialPeriodStatusAction}>
                         <input type="hidden" name="id" value={period.id} />
                         <input type="hidden" name="status" value="archived" />
                         <Button size="small" type="submit" variant="outlined" color="error">
                           Arquivar
                         </Button>
-                      </form>
+                      </ActionForm>
                     )}
                   </Box>
                 </TableCell>

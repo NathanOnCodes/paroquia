@@ -46,8 +46,7 @@ export default function AdminShell({
   const isAdmin = user.role === "admin";
 
   const items = [
-    { href: "/admin", label: "Painel", icon: <DashboardIcon />, show: true },
-    { href: "/admin/dashboard", label: "Dashboard", icon: <DashboardIcon />, show: true },
+    { href: "/admin/dashboard", label: "Painel", icon: <DashboardIcon />, show: true },
     { href: "/admin/dizimistas", label: "Dizimistas", icon: <PeopleIcon />, show: true },
     { href: "/admin/comunidades", label: "Comunidades", icon: <GroupsIcon />, show: true },
     { href: "/admin/eventos", label: "Eventos", icon: <CalendarMonthIcon />, show: true },

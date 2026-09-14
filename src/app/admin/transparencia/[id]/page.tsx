@@ -15,6 +15,7 @@ import MenuItem from "@mui/material/MenuItem";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
+import ActionForm from "@/design-system/forms/ActionForm";
 import ServerForm from "@/design-system/forms/ServerForm";
 import { getFinancialPeriodById } from "@/features/transparency/queries.admin";
 import { listDocumentsForPeriod } from "@/features/transparency/queries.admin";
@@ -25,7 +26,6 @@ import {
   uploadTransparencyDocumentAction,
 } from "@/features/transparency/actions";
 import { requireRole } from "@/lib/auth/authorization";
-import { voidAction } from "@/lib/actions";
 import { formatCurrency, formatDate } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -76,31 +76,31 @@ export default async function FinancialPeriodDetailPage({
 
       <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 4 }}>
         {period.status === "draft" && (
-          <form action={voidAction(changeFinancialPeriodStatusAction)}>
+          <ActionForm action={changeFinancialPeriodStatusAction}>
             <input type="hidden" name="id" value={period.id} />
             <input type="hidden" name="status" value="review" />
             <Button type="submit" variant="outlined" color="warning">
               Enviar para revisão
             </Button>
-          </form>
+          </ActionForm>
         )}
         {period.status !== "published" && user.profile.role === "admin" && (
-          <form action={voidAction(changeFinancialPeriodStatusAction)}>
+          <ActionForm action={changeFinancialPeriodStatusAction}>
             <input type="hidden" name="id" value={period.id} />
             <input type="hidden" name="status" value="published" />
             <Button type="submit" variant="contained" color="success">
               Publicar
             </Button>
-          </form>
+          </ActionForm>
         )}
         {period.status === "published" && user.profile.role === "admin" && (
-          <form action={voidAction(changeFinancialPeriodStatusAction)}>
+          <ActionForm action={changeFinancialPeriodStatusAction}>
             <input type="hidden" name="id" value={period.id} />
             <input type="hidden" name="status" value="archived" />
             <Button type="submit" variant="outlined" color="error">
               Arquivar
             </Button>
-          </form>
+          </ActionForm>
         )}
       </Box>
 
@@ -183,13 +183,13 @@ export default async function FinancialPeriodDetailPage({
                   <TableCell>{entry.description}</TableCell>
                   <TableCell align="right">{formatCurrency(entry.amount_cents)}</TableCell>
                   <TableCell>
-                    <form action={voidAction(deleteFinancialEntryAction)}>
+                    <ActionForm action={deleteFinancialEntryAction}>
                       <input type="hidden" name="id" value={entry.id} />
                       <input type="hidden" name="period_id" value={period.id} />
                       <Button size="small" color="error" type="submit">
                         Excluir
                       </Button>
-                    </form>
+                    </ActionForm>
                   </TableCell>
                 </TableRow>
               ))}

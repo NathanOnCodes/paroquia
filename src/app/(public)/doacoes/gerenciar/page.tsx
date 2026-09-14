@@ -7,9 +7,9 @@ import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
 import PageHeader from "@/design-system/layout/PageHeader";
+import ActionForm from "@/design-system/forms/ActionForm";
 import RecurringRequestForm from "@/features/recurring/components/RecurringRequestForm";
 import { getRecurringSession, cancelRecurringAction } from "@/features/recurring/actions";
-import { voidAction } from "@/lib/actions";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -77,12 +77,12 @@ export default async function RecurringManagePage({
                       Cancelamento em andamento para o fim do ciclo atual.
                     </Alert>
                   ) : (
-                    <form action={voidAction(cancelRecurringAction)}>
+                    <ActionForm action={cancelRecurringAction}>
                       <input type="hidden" name="subscription_id" value={sub.stripe_subscription_id} />
                       <Button type="submit" color="error" variant="outlined">
                         Cancelar recorrência
                       </Button>
-                    </form>
+                    </ActionForm>
                   )}
                 </CardContent>
               </Card>

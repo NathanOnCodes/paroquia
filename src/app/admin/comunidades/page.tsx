@@ -10,10 +10,10 @@ import TableRow from "@mui/material/TableRow";
 import Chip from "@mui/material/Chip";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import { voidAction } from "@/lib/actions";
+import ActionForm from "@/design-system/forms/ActionForm";
 import ServerForm from "@/design-system/forms/ServerForm";
-import { listCommunitiesAdmin } from "@/features/communities/queries.admin";
 import PageHeader from "@/design-system/layout/PageHeader";
+import { listCommunitiesAdmin } from "@/features/communities/queries.admin";
 import {
   createCommunityAction,
   setCommunityStatusAction,
@@ -72,13 +72,13 @@ export default async function ComunidadesPage() {
                     <Button size="small" component="a" href={`/admin/comunidades/${community.id}`} variant="outlined">
                       Editar
                     </Button>
-                    <form action={voidAction(setCommunityStatusAction)}>
+                    <ActionForm action={setCommunityStatusAction}>
                       <input type="hidden" name="id" value={community.id} />
                       <input type="hidden" name="is_active" value={community.is_active ? "false" : "true"} />
                       <Button size="small" color={community.is_active ? "error" : "success"} variant="outlined">
                         {community.is_active ? "Inativar" : "Ativar"}
                       </Button>
-                    </form>
+                    </ActionForm>
                   </Box>
                 </TableCell>
               </TableRow>

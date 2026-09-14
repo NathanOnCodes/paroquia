@@ -13,6 +13,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Chip from "@mui/material/Chip";
 import Divider from "@mui/material/Divider";
+import ActionForm from "@/design-system/forms/ActionForm";
 import ServerForm from "@/design-system/forms/ServerForm";
 import { getDonorById } from "@/features/donors/queries";
 import { listAllCommunities } from "@/features/communities/queries.admin";
@@ -20,7 +21,6 @@ import { updateDonorAction, setDonorStatusAction } from "@/features/donors/actio
 import { listContributionsByDonor } from "@/features/contributions/queries";
 import { listRecurringForDonor } from "@/features/payments/services";
 import { formatCurrency, formatDateTime } from "@/lib/format";
-import { voidAction } from "@/lib/actions";
 
 export const dynamic = "force-dynamic";
 
@@ -79,13 +79,13 @@ export default async function DonorDetailPage({
         <Typography variant="h6" sx={{ mb: 2 }}>
           Situação do cadastro
         </Typography>
-        <form action={voidAction(setDonorStatusAction)}>
+        <ActionForm action={setDonorStatusAction}>
           <input type="hidden" name="id" value={donor.id} />
           <input type="hidden" name="is_active" value={donor.is_active ? "false" : "true"} />
           <Button type="submit" color={donor.is_active ? "error" : "success"} variant="outlined">
             {donor.is_active ? "Inativar cadastro" : "Reativar cadastro"}
           </Button>
-        </form>
+        </ActionForm>
       </Paper>
 
       <Paper sx={{ p: 3, mb: 3 }}>

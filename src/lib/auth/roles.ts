@@ -5,7 +5,7 @@ import type { Role } from "@/lib/db-types";
  * nunca como identificadores no banco/código.
  */
 export const ROLE_LABELS: Record<Role, string> = {
-  admin: "Pároco",
+  admin: "Admin",
   assistente: "Assistente",
 };
 
