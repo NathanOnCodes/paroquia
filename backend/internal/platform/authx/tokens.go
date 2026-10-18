@@ -119,6 +119,9 @@ func (m *GerenciadorDeTokens) InterpretarAcesso(raw string) (*Reivindicacoes, er
 		jwt.WithIssuer(m.issuer),
 		jwt.WithExpirationRequired(),
 		jwt.WithLeeway(30*time.Second),
+		// O relógio é injetável, então os testes podem simular vencimento sem
+		// depender do tempo real.
+		jwt.WithTimeFunc(m.now),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %v", ErrTokenInvalido, err)
