@@ -28,14 +28,18 @@ import (
 	"github.com/NathanOnCodes/paroquia/backend/internal/platform/ratelimit"
 	"github.com/NathanOnCodes/paroquia/backend/internal/platform/storage"
 
+	audit2 "github.com/NathanOnCodes/paroquia/backend/internal/slices/audit"
 	"github.com/NathanOnCodes/paroquia/backend/internal/slices/auth"
 	"github.com/NathanOnCodes/paroquia/backend/internal/slices/communities"
 	"github.com/NathanOnCodes/paroquia/backend/internal/slices/contact"
 	"github.com/NathanOnCodes/paroquia/backend/internal/slices/contributions"
 	"github.com/NathanOnCodes/paroquia/backend/internal/slices/dashboard"
 	"github.com/NathanOnCodes/paroquia/backend/internal/slices/donors"
+	"github.com/NathanOnCodes/paroquia/backend/internal/slices/events"
 	pagamentos "github.com/NathanOnCodes/paroquia/backend/internal/slices/payments"
+	"github.com/NathanOnCodes/paroquia/backend/internal/slices/recurring"
 	"github.com/NathanOnCodes/paroquia/backend/internal/slices/settings"
+	"github.com/NathanOnCodes/paroquia/backend/internal/slices/transparency"
 	"github.com/NathanOnCodes/paroquia/backend/internal/slices/users"
 )
 
@@ -180,6 +184,56 @@ func Novo(ctx context.Context, d Dependencias) (*Aplicacao, error) {
 	})
 	pagamentosH := pagamentos.NovoManipulador(pagamentosSvc, d.MeioDePagamento)
 
+	// Imagens de evento: URL pública simples, como o bucket legado.
+	urlDaImagem := func(caminho string) string {
+		if caminho == "" {
+			return ""
+		}
+		return "/api/files/events/" + caminho
+	}
+
+	eventosRepo := events.NovoRepositorio(d.Cliente)
+	eventosSvc := events.NovoServico(events.Dependencias{
+		Repositorio:   eventosRepo,
+		Armazenamento: d.Armazenamento,
+		Auditoria:     registrador,
+		Log:           d.Log,
+		TamanhoMaximo: d.Config.TamanhoMaximoArquivoBytes(),
+		URLDaImagem:   urlDaImagem,
+		Relogio:       d.Relogio,
+	})
+	eventosH := events.NovoManipulador(eventosSvc)
+
+	transparenciaSvc := transparency.NovoServico(transparency.Dependencias{
+		Periodos:      transparency.NovoRepositorioDePeriodos(d.Cliente),
+		Lancamentos:   transparency.NovoRepositorioDeLancamentos(d.Cliente),
+		Documentos:    transparency.NovoRepositorioDeDocumentos(d.Cliente),
+		Armazenamento: d.Armazenamento,
+		Auditoria:     registrador,
+		Log:           d.Log,
+		TamanhoMaximo: d.Config.TamanhoMaximoArquivoBytes(),
+		Relogio:       d.Relogio,
+	})
+	transparenciaH := transparency.NovoManipulador(transparenciaSvc)
+
+	recorrenciasSvc := recurring.NovoServico(recurring.Dependencias{
+		Tokens:       recurring.NovoRepositorioDeTokens(d.Cliente),
+		Recorrencias: recurring.NovoRepositorioDeRecorrencias(d.Cliente),
+		Remetente:    d.Remetente,
+		Limitador:    limitador,
+		Limites:      d.Config.Limites,
+		URLPublica:   d.Config.ServidorHTTP.URLPublica,
+		NomeDoSite:   d.Config.Site.Name,
+		TTLDoToken:   d.Config.Autenticacao.TempoDeVidaDoTokenDeRecorrencia,
+		Auditoria:    registrador,
+		Log:          d.Log,
+		Relogio:      d.Relogio,
+	})
+	recorrenciasH := recurring.NovoManipulador(recorrenciasSvc, d.Config.Autenticacao.CookieDeRecorrencia)
+
+	auditoriaRepo := audit2.NovoRepositorio(d.Cliente)
+	auditoriaH := audit2.NovoManipulador(audit2.NovoServico(auditoriaRepo))
+
 	// --- aplicação Fiber ----------------------------------------------
 	app := fiber.New(fiber.Config{
 		AppName:      d.Config.Site.Name,
@@ -205,12 +259,28 @@ func Novo(ctx context.Context, d Dependencias) (*Aplicacao, error) {
 	contact.Registrar(api, contatoH, autenticacao)
 	auth.Registrar(api, authH, autenticacao)
 	pagamentos.Registrar(api, pagamentosH)
+	events.Registrar(api, eventosH, autenticacao)
+	transparency.Registrar(api, transparenciaH, autenticacao)
+	recurring.Registrar(api, recorrenciasH)
 
 	// Área administrativa.
 	users.Registrar(api, usuariosH, autenticacao)
 	donors.Registrar(api, doadorH, autenticacao)
 	contributions.Registrar(api, contribuicoesH, autenticacao)
 	dashboard.Registrar(api, painelH, autenticacao)
+	audit2.Registrar(api, auditoriaH, autenticacao)
+
+	// Imagens de evento, servidas do volume de armazenamento.
+	app.Get("/api/files/events/*", func(c fiber.Ctx) error {
+		caminho := "events/" + c.Params("*")
+		stream, obj, err := d.Armazenamento.Open(c.Context(), caminho)
+		if err != nil {
+			return httpx.ErroNaoEncontrado("Imagem não encontrada")
+		}
+		defer func() { _ = stream.Close() }()
+		_ = obj
+		return c.SendStream(stream)
+	})
 
 	// Documentação OpenAPI com interface interativa.
 	docs.Registrar(app)
