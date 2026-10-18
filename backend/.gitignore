@@ -1,0 +1,24 @@
+# Build e binários
+/bin/
+/dist/
+/server
+*.exe
+*.test
+*.out
+
+# Dados locais (volume de uploads e banco de desenvolvimento)
+/data/
+
+# Dependências e cobertura
+/vendor/
+coverage.out
+coverage.html
+
+# Configuração local
+.env
+.env.*
+!.env.example
+
+# Editor
+.idea/
+.vscode/
