@@ -42,7 +42,7 @@ type registradorEnt struct {
 }
 
 // New builds the Ent-backed audit logger.
-func New(client *ent.Client, log *slog.Logger) RegistradorDeAuditoria {
+func NovoRegistradorDeAuditoria(client *ent.Client, log *slog.Logger) RegistradorDeAuditoria {
 	return &registradorEnt{client: client, log: log}
 }
 

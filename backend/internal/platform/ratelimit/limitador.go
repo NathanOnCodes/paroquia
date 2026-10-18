@@ -31,7 +31,7 @@ type Limitador struct {
 }
 
 // New builds a Limiter. The clock is injectable for tests.
-func New(client *ent.Client, clock func() time.Time) *Limitador {
+func NovoLimitador(client *ent.Client, clock func() time.Time) *Limitador {
 	if clock == nil {
 		clock = time.Now
 	}

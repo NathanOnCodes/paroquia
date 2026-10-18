@@ -1,0 +1,951 @@
+openapi: 3.1.0
+
+info:
+  title: API da Paróquia
+  version: 1.0.0
+  summary: Dízimos, doações, eventos e transparência financeira.
+  description: |
+    API do sistema de gestão paroquial. Substitui o Supabase (autenticação,
+    banco e armazenamento) por um backend próprio em Go.
+
+    ## Autenticação
+
+    O login devolve **dois cookies httpOnly**: um access token JWT (curta
+    duração) e um refresh token opaco (rotativo). O navegador os envia
+    automaticamente; nada disso aparece no corpo das respostas.
+
+    Papéis: `admin` (configurações, usuários e publicação de transparência) e
+    `assistente` (operação do dia a dia). O papel `admin` satisfaz qualquer
+    exigência do `assistente`.
+
+    ## Erros
+
+    Toda resposta de erro tem a forma:
+
+    ```json
+    { "error": { "code": "validation_error", "message": "Dados inválidos", "details": [] } }
+    ```
+  contact:
+    name: Paróquia São Benedito e Menino Jesus
+  license:
+    name: Licença de Caridade para a Igreja
+    identifier: LicenseRef-Charity-Church
+
+servers:
+  - url: http://localhost:8080
+    description: Desenvolvimento
+  - url: https://api.paroquia.local
+    description: Produção
+
+tags:
+  - name: autenticacao
+    description: Login, sessão e troca de senha.
+  - name: publico
+    description: Leitura aberta ao fiel.
+  - name: doacoes
+    description: Criação de contribuições e gestão da recorrência.
+  - name: admin
+    description: Área administrativa, restrita à equipe.
+
+security:
+  - cookieAuth: []
+  - bearerAuth: []
+
+paths:
+  # ---------------------------------------------------------------- auth ---
+  /api/auth/login:
+    post:
+      tags: [autenticacao]
+      summary: Autentica um membro da equipe
+      operationId: entrar
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequisicaoDeLogin'
+      responses:
+        '200':
+          description: Sessão iniciada; os cookies já foram definidos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespostaDeSessao'
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+
+  /api/auth/refresh:
+    post:
+      tags: [autenticacao]
+      summary: Rotaciona o refresh token
+      description: |
+        Devolve um par novo de tokens e revoga o anterior. Se um refresh token
+        já trocado for reutilizado, toda a família de sessões é revogada.
+      operationId: renovarSessao
+      security: []
+      responses:
+        '200':
+          description: Sessão renovada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespostaDeSessao'
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+
+  /api/auth/logout:
+    post:
+      tags: [autenticacao]
+      summary: Encerra a sessão atual
+      operationId: sair
+      security: []
+      responses:
+        '200':
+          description: Sessão encerrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Confirmado'
+
+  /api/auth/eu:
+    get:
+      tags: [autenticacao]
+      summary: Identidade do usuário autenticado
+      operationId: obterPerfil
+      responses:
+        '200':
+          description: Perfil atual.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+
+  /api/auth/senha:
+    post:
+      tags: [autenticacao]
+      summary: Troca a senha do próprio usuário
+      operationId: trocarSenha
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequisicaoDeTrocaDeSenha'
+      responses:
+        '200':
+          description: Senha alterada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Confirmado'
+        '400':
+          $ref: '#/components/responses/Validacao'
+
+  # --------------------------------------------------------------- publico ---
+  /api/public/settings:
+    get:
+      tags: [publico]
+      summary: Configurações públicas do site
+      description: Marca, cores e dados do Pix usados na página inicial.
+      operationId: obterConfiguracoesPublicas
+      security: []
+      responses:
+        '200':
+          description: Configurações atuais.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfiguracoesDoSite'
+
+  /api/public/communities:
+    get:
+      tags: [publico]
+      summary: Comunidades ativas
+      description: Lista usada pelo formulário de doação.
+      operationId: listarComunidadesPublicas
+      security: []
+      responses:
+        '200':
+          description: Lista de comunidades.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comunidade'
+
+  /api/contact:
+    post:
+      tags: [publico]
+      summary: Envia mensagem para a secretaria
+      description: Limitado a 3 envios a cada 5 minutos por endereço IP.
+      operationId: enviarContato
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequisicaoDeContato'
+      responses:
+        '200':
+          description: Mensagem aceita.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Confirmado'
+        '400':
+          $ref: '#/components/responses/Validacao'
+        '429':
+          $ref: '#/components/responses/LimiteExcedido'
+
+  # --------------------------------------------------------------- doacoes ---
+  /api/payments/create-payment:
+    post:
+      tags: [doacoes]
+      summary: Prepara uma contribuição avulsa
+      description: |
+        Devolve o `client_secret` que o navegador usa para confirmar o
+        pagamento. O registro no livro-razão é feito pelo webhook.
+      operationId: criarPagamentoAvulso
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequisicaoDeDoacao'
+      responses:
+        '200':
+          description: Intenção de pagamento criada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespostaDeIntencao'
+        '400':
+          $ref: '#/components/responses/Validacao'
+
+  /api/payments/create-recurring:
+    post:
+      tags: [doacoes]
+      summary: Prepara o método de pagamento da recorrência
+      operationId: criarConfiguracaoDeRecorrencia
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequisicaoDeDoacao'
+      responses:
+        '200':
+          description: Setup preparado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespostaDeConfiguracao'
+        '400':
+          $ref: '#/components/responses/Validacao'
+
+  /api/payments/create-subscription:
+    post:
+      tags: [doacoes]
+      summary: Efetiva a contribuição recorrente
+      operationId: criarAssinatura
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequisicaoDeAssinatura'
+      responses:
+        '200':
+          description: Recorrência criada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespostaDeAssinatura'
+        '400':
+          $ref: '#/components/responses/Validacao'
+
+  /api/stripe/webhook:
+    post:
+      tags: [doacoes]
+      summary: Recebe eventos do Stripe
+      description: |
+        Autenticado pelo cabeçalho `Stripe-Signature`. Idempotente: o mesmo
+        evento é processado uma única vez.
+      operationId: receberEventoDoStripe
+      security: []
+      parameters:
+        - name: Stripe-Signature
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Evento aceito.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  received:
+                    type: boolean
+                  status:
+                    type: string
+                    enum: [processed, skipped]
+        '400':
+          description: Assinatura inválida.
+
+  # ---------------------------------------------------------------- admin ---
+  /api/admin/dashboard:
+    get:
+      tags: [admin]
+      summary: Indicadores do painel administrativo
+      operationId: obterPainel
+      responses:
+        '200':
+          description: Totais e ranking de comunidades.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Painel'
+
+  /api/admin/usuarios:
+    get:
+      tags: [admin]
+      summary: Lista contas administrativas
+      description: Exige papel `admin`.
+      operationId: listarUsuarios
+      responses:
+        '200':
+          description: Lista de usuários.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Usuario'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
+    post:
+      tags: [admin]
+      summary: Cria uma conta administrativa
+      description: Exige papel `admin`. A senha temporária deve ser trocada no primeiro acesso.
+      operationId: criarUsuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequisicaoDeUsuario'
+      responses:
+        '201':
+          description: Usuário criado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
+        '409':
+          $ref: '#/components/responses/Conflito'
+
+  /api/admin/usuarios/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Identificador'
+    get:
+      tags: [admin]
+      summary: Detalha um usuário administrativo
+      operationId: obterUsuario
+      responses:
+        '200':
+          description: Usuário.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '404':
+          $ref: '#/components/responses/NaoEncontrado'
+    put:
+      tags: [admin]
+      summary: Atualiza um usuário administrativo
+      description: |
+        Ninguém desativa a própria conta, e a paróquia nunca fica sem
+        administrador ativo.
+      operationId: atualizarUsuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequisicaoDeUsuario'
+      responses:
+        '200':
+          description: Usuário atualizado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '409':
+          $ref: '#/components/responses/Conflito'
+
+  /api/admin/usuarios/{id}/status:
+    parameters:
+      - $ref: '#/components/parameters/Identificador'
+    patch:
+      tags: [admin]
+      summary: Ativa ou desativa uma conta
+      operationId: definirStatusDoUsuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [is_active]
+              properties:
+                is_active:
+                  type: boolean
+      responses:
+        '200':
+          description: Status alterado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+
+  /api/admin/usuarios/{id}/senha:
+    parameters:
+      - $ref: '#/components/parameters/Identificador'
+    post:
+      tags: [admin]
+      summary: Redefine a senha de um usuário
+      operationId: redefinirSenhaDoUsuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [password]
+              properties:
+                password:
+                  type: string
+                  minLength: 8
+      responses:
+        '200':
+          description: Senha redefinida.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Confirmado'
+
+  /api/admin/donors:
+    get:
+      tags: [admin]
+      summary: Lista dizimistas
+      operationId: listarDizimistas
+      parameters:
+        - name: search
+          in: query
+          description: Busca por nome, e-mail ou telefone.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de dizimistas.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Dizimista'
+    post:
+      tags: [admin]
+      summary: Cadastra um dizimista
+      operationId: criarDizimista
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequisicaoDeDizimista'
+      responses:
+        '201':
+          description: Dizimista criado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dizimista'
+        '409':
+          $ref: '#/components/responses/Conflito'
+
+  /api/admin/donors/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Identificador'
+    get:
+      tags: [admin]
+      summary: Detalha um dizimista
+      operationId: obterDizimista
+      responses:
+        '200':
+          description: Dizimista.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dizimista'
+        '404':
+          $ref: '#/components/responses/NaoEncontrado'
+    put:
+      tags: [admin]
+      summary: Atualiza um dizimista
+      operationId: atualizarDizimista
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequisicaoDeDizimista'
+      responses:
+        '200':
+          description: Dizimista atualizado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dizimista'
+
+  /api/admin/contributions:
+    get:
+      tags: [admin]
+      summary: Livro-razão das contribuições
+      operationId: listarContribuicoes
+      responses:
+        '200':
+          description: Contribuições recentes.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contribuicao'
+
+  /api/admin/settings:
+    get:
+      tags: [admin]
+      summary: Lê as configurações do site
+      operationId: lerConfiguracoes
+      responses:
+        '200':
+          description: Configurações atuais.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfiguracoesDoSite'
+    put:
+      tags: [admin]
+      summary: Atualiza as configurações do site
+      description: Exige papel `admin`. A chave Pix exige nome e cidade do recebedor.
+      operationId: atualizarConfiguracoes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequisicaoDeConfiguracoes'
+      responses:
+        '200':
+          description: Configurações gravadas.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfiguracoesDoSite'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
+
+  /api/admin/contacts:
+    get:
+      tags: [admin]
+      summary: Caixa de entrada da secretaria
+      operationId: listarContatos
+      responses:
+        '200':
+          description: Mensagens recebidas.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MensagemDeContato'
+
+components:
+
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: paroquia_access
+      description: Access token JWT definido pelo endpoint de login.
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    Identificador:
+      name: id
+      in: path
+      required: true
+      description: Identificador UUID do registro.
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    Validacao:
+      description: Dados inválidos.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Erro'
+    NaoAutenticado:
+      description: Sessão ausente ou inválida.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Erro'
+    SemPermissao:
+      description: O papel do usuário não autoriza esta operação.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Erro'
+    NaoEncontrado:
+      description: Registro não encontrado.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Erro'
+    Conflito:
+      description: Operação em conflito com o estado atual.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Erro'
+    LimiteExcedido:
+      description: Muitas solicitações em pouco tempo.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Erro'
+
+  schemas:
+
+    Erro:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              enum:
+                - validation_error
+                - unauthenticated
+                - forbidden
+                - not_found
+                - conflict
+                - rate_limited
+                - payload_too_large
+                - upstream_error
+                - internal_error
+            message:
+              type: string
+              description: Mensagem segura para exibição ao usuário.
+            details:
+              type: array
+              items:
+                type: object
+                properties:
+                  field:
+                    type: string
+                  message:
+                    type: string
+
+    Confirmado:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          const: true
+
+    RequisicaoDeLogin:
+      type: object
+      required: [email, senha]
+      properties:
+        email:
+          type: string
+          format: email
+        senha:
+          type: string
+          minLength: 8
+
+    RequisicaoDeTrocaDeSenha:
+      type: object
+      required: [senha_atual, nova_senha]
+      properties:
+        senha_atual:
+          type: string
+          minLength: 8
+        nova_senha:
+          type: string
+          minLength: 8
+
+    RespostaDeSessao:
+      type: object
+      required: [user]
+      properties:
+        user:
+          $ref: '#/components/schemas/Usuario'
+
+    Usuario:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        full_name:
+          type: string
+        role:
+          type: string
+          enum: [admin, assistente]
+        is_active:
+          type: boolean
+        must_change_password:
+          type: boolean
+        last_login_at:
+          type: [string, 'null']
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    RequisicaoDeUsuario:
+      type: object
+      required: [email, full_name, role]
+      properties:
+        email:
+          type: string
+          format: email
+        full_name:
+          type: string
+          minLength: 3
+          maxLength: 200
+        password:
+          type: string
+          minLength: 8
+          description: Exigida apenas na criação.
+        role:
+          type: string
+          enum: [admin, assistente]
+        is_active:
+          type: boolean
+          default: true
+
+    ConfiguracoesDoSite:
+      type: object
+      properties:
+        site_name: { type: string }
+        site_title: { type: string }
+        city: { type: string }
+        description: { type: string }
+        secondary_color: { type: string, pattern: '^#[0-9A-Fa-f]{6}$' }
+        pix_key: { type: [string, 'null'] }
+        pix_receiver_name: { type: [string, 'null'] }
+        pix_receiver_city: { type: [string, 'null'] }
+        home_title: { type: [string, 'null'] }
+        home_description: { type: [string, 'null'] }
+
+    RequisicaoDeConfiguracoes:
+      type: object
+      required: [site_name, site_title, description, secondary_color]
+      properties:
+        site_name: { type: string, minLength: 2, maxLength: 120 }
+        site_title: { type: string, minLength: 2, maxLength: 120 }
+        city: { type: string, maxLength: 120 }
+        description: { type: string, minLength: 2, maxLength: 240 }
+        secondary_color: { type: string, pattern: '^#[0-9A-Fa-f]{6}$' }
+        pix_key: { type: string, maxLength: 254 }
+        pix_receiver_name: { type: string, maxLength: 25 }
+        pix_receiver_city: { type: string, maxLength: 15 }
+        home_title: { type: string, maxLength: 180 }
+        home_description: { type: string, maxLength: 400 }
+
+    Comunidade:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        description: { type: string }
+        city: { type: string }
+        is_active: { type: boolean }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+
+    Dizimista:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        full_name: { type: string }
+        email: { type: string, format: email }
+        phone: { type: [string, 'null'] }
+        city: { type: string }
+        neighborhood: { type: string }
+        community_id: { type: [string, 'null'], format: uuid }
+        community_name: { type: [string, 'null'] }
+        community_label: { type: [string, 'null'] }
+        privacy_consent_at: { type: [string, 'null'], format: date-time }
+        is_active: { type: boolean }
+
+    RequisicaoDeDizimista:
+      type: object
+      required: [full_name, email]
+      properties:
+        full_name: { type: string, minLength: 3, maxLength: 200 }
+        email: { type: string, format: email }
+        phone: { type: string }
+        city: { type: string, maxLength: 120 }
+        neighborhood: { type: string, maxLength: 120 }
+        community_id: { type: string, format: uuid }
+        community_name: { type: string, maxLength: 160 }
+        is_active: { type: boolean, default: true }
+
+    Contribuicao:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        donor_id: { type: string, format: uuid }
+        donor_name: { type: [string, 'null'] }
+        donor_email: { type: [string, 'null'] }
+        community_id: { type: [string, 'null'], format: uuid }
+        community_name: { type: [string, 'null'] }
+        recurring_donation_id: { type: [string, 'null'], format: uuid }
+        amount_cents: { type: integer, minimum: 1 }
+        currency: { type: string, example: brl }
+        payment_type: { type: string, enum: [one_time, recurring] }
+        status: { type: string, enum: [pending, paid, failed, canceled, refunded] }
+        paid_at: { type: [string, 'null'], format: date-time }
+        refunded_at: { type: [string, 'null'], format: date-time }
+
+    RequisicaoDeDoacao:
+      type: object
+      required:
+        [full_name, email, city, amount_cents, privacy_consent]
+      description: |
+        Exige `community_id` **ou** `community_name`. O consentimento de
+        privacidade é obrigatório e o valor fica entre R$ 1,00 e R$ 100.000,00.
+      properties:
+        full_name: { type: string, minLength: 3, maxLength: 200 }
+        email: { type: string, format: email }
+        phone: { type: string }
+        community_id: { type: string, format: uuid }
+        community_name: { type: string, maxLength: 160 }
+        city: { type: string, minLength: 2, maxLength: 120 }
+        neighborhood: { type: string, maxLength: 120 }
+        amount_cents: { type: integer, minimum: 100, maximum: 10000000 }
+        is_recurring: { type: boolean, default: false }
+        privacy_consent: { type: boolean, const: true }
+
+    RequisicaoDeAssinatura:
+      type: object
+      required: [donor_id, amount_cents, stripe_customer_id, payment_method_id]
+      properties:
+        donor_id: { type: string, format: uuid }
+        community_id: { type: string, format: uuid }
+        community_name: { type: string, maxLength: 160 }
+        amount_cents: { type: integer, minimum: 100, maximum: 10000000 }
+        stripe_customer_id: { type: string }
+        payment_method_id: { type: string }
+
+    RespostaDeIntencao:
+      type: object
+      properties:
+        client_secret: { type: string }
+        amount_cents: { type: integer }
+
+    RespostaDeConfiguracao:
+      type: object
+      properties:
+        client_secret: { type: string }
+        stripe_customer_id: { type: string }
+        donor_id: { type: string, format: uuid }
+
+    RespostaDeAssinatura:
+      type: object
+      properties:
+        subscription_id: { type: string }
+
+    RequisicaoDeContato:
+      type: object
+      required: [name, email, message, privacy_consent]
+      properties:
+        name: { type: string, minLength: 3, maxLength: 200 }
+        email: { type: string, format: email }
+        phone: { type: string }
+        message: { type: string, minLength: 10, maxLength: 4000 }
+        privacy_consent: { type: boolean, const: true }
+
+    MensagemDeContato:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        email: { type: string, format: email }
+        phone: { type: [string, 'null'] }
+        message: { type: string }
+        status: { type: string, enum: [new, in_progress, resolved, archived] }
+        assigned_to: { type: [string, 'null'], format: uuid }
+        assigned_to_name: { type: [string, 'null'] }
+        created_at: { type: string, format: date-time }
+
+    Painel:
+      type: object
+      properties:
+        total_raised_cents: { type: integer }
+        total_expense_cents: { type: integer }
+        balance_cents: { type: integer }
+        total_donors: { type: integer }
+        pending_payments: { type: integer }
+        failed_payments: { type: integer }
+        canceled_recurring: { type: integer }
+        active_recurring: { type: integer }
+        community_ranking:
+          type: array
+          items:
+            type: object
+            properties:
+              community_id: { type: string }
+              community_name: { type: string }
+              amount_cents: { type: integer }
+              contributions: { type: integer }

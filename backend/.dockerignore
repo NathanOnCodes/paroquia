@@ -1,0 +1,24 @@
+# Contexto de build: só o que o compilador precisa.
+.git
+.gitignore
+
+# Artefatos locais
+bin/
+dist/
+data/
+coverage.out
+coverage.html
+
+# Configuração local e segredos
+.env
+.env.*
+!.env.example
+
+# Documentação e ferramentas
+docs/
+*.md
+.opencode/
+
+# IDE
+.idea/
+.vscode/
